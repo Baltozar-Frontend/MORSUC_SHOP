@@ -98,3 +98,42 @@ footer {
     text-decoration: none;
     border-radius: 5px;
 }
+
+
+/* Анимации */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+@keyframes glow {
+    0% { box-shadow: 0 0 5px #f0a400; }
+    50% { box-shadow: 0 0 20px #f0a400; }
+    100% { box-shadow: 0 0 5px #f0a400; }
+}
+
+/* Применяем анимации */
+.hero, .rates, .reviews {
+    animation: fadeIn 1s ease-out;
+}
+
+button, .tg-button {
+    animation: pulse 2s infinite;
+}
+
+button:hover, .tg-button:hover {
+    animation: glow 1.5s infinite;
+    background: #ffbb00;
+}
+
+.card:hover {
+    transform: scale(1.05);
+    transition: transform 0.3s ease;
+    box-shadow: 0 0 15px #f0a400;
+}
