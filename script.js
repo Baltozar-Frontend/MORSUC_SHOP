@@ -25,6 +25,6 @@ document.getElementById('buyButton').addEventListener('click', function() {
     this.style.transform = 'scale(0.95)';
     setTimeout(() => {
         this.style.transform = 'scale(1)';
-        window.open('https://t.me/your_shop', '_blank');
+        window.open('https://t.me/MORS_uc');
     }, 200);
 });
