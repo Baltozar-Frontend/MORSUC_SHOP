@@ -1,0 +1,411 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px;
+    color: #333;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+}
+
+header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 40px;
+    text-align: center;
+}
+
+header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+
+.dashboard {
+    padding: 30px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 25px;
+}
+
+.card {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card h2 {
+    color: #667eea;
+    margin-bottom: 20px;
+    font-size: 1.4rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.info-grid {
+    display: grid;
+    gap: 15px;
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.label {
+    font-weight: 600;
+    color: #666;
+    min-width: 200px;
+}
+
+.value {
+    color: #333;
+    text-align: right;
+    font-weight: 500;
+}
+
+.value.code {
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    background: #f5f5f5;
+    padding: 5px 10px;
+    border-radius: 5px;
+    word-break: break-all;
+}
+
+/* Стили для загрузки файлов */
+.upload-section {
+    margin-bottom: 30px;
+}
+
+.file-input-container {
+    margin-bottom: 20px;
+}
+
+.file-input {
+    display: none;
+}
+
+.file-label {
+    display: inline-block;
+    padding: 15px 30px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 15px;
+    width: 100%;
+}
+
+.file-label:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+}
+
+.upload-btn {
+    background: #4CAF50;
+    color: white;
+    border: none;
+    padding: 15px 40px;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.upload-btn:hover {
+    background: #45a049;
+    transform: scale(1.05);
+}
+
+/* Прогресс бар */
+.progress-container {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 10px;
+    background: #f0f0f0;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+.progress-text {
+    font-weight: 600;
+    color: #667eea;
+}
+
+/* Список файлов */
+.uploaded-files h3 {
+    color: #667eea;
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+}
+
+.files-list {
+    border: 2px dashed #ddd;
+    border-radius: 10px;
+    padding: 20px;
+    min-height: 100px;
+}
+
+.empty-message {
+    color: #999;
+    text-align: center;
+    font-style: italic;
+}
+
+.file-item {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-left: 4px solid #667eea;
+}
+
+.file-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.file-icon {
+    font-size: 1.5rem;
+}
+
+.file-name {
+    font-weight: 600;
+}
+
+.file-size {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.file-date {
+    color: #888;
+    font-size: 0.85rem;
+}
+
+/* Футер */
+footer {
+    background: #f8f9fa;
+    padding: 25px;
+    text-align: center;
+    border-top: 1px solid #eee;
+}
+
+footer p {
+    color: #666;
+    margin-bottom: 10px;
+    line-height: 1.5;
+}
+
+.timestamp {
+    font-size: 0.9rem;
+    color: #999;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .dashboard {
+        grid-template-columns: 1fr;
+        padding: 15px;
+    }
+    
+    header {
+        padding: 30px 20px;
+    }
+    
+    header h1 {
+        font-size: 2rem;
+    }
+    
+    .info-item {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .label {
+        min-width: auto;
+    }
+    
+    .value {
+        text-align: left;
+        width: 100%;
+    }
+}
+
+
+
+
+/* Стили для Telegram секции */
+.tg-badge {
+    background: linear-gradient(135deg, #0088cc, #00aaff);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.tg-section {
+    border: 2px solid #0088cc;
+    background: linear-gradient(135deg, rgba(0, 136, 204, 0.1), rgba(0, 170, 255, 0.05));
+    order: -1; /* Перемещаем в начало */
+}
+
+.tg-data-item {
+    background: rgba(0, 136, 204, 0.1);
+    border-left: 4px solid #0088cc;
+}
+
+/* Стили для запроса разрешений */
+.permission-request {
+    background: #fff8e1;
+    border: 2px dashed #ffb300;
+    padding: 15px;
+    border-radius: 10px;
+    margin: 10px 0;
+    text-align: center;
+}
+
+.permission-btn {
+    background: linear-gradient(135deg, #4CAF50, #45a049);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: bold;
+    margin: 10px 5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.permission-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+}
+
+.permission-btn.small {
+    padding: 8px 15px;
+    font-size: 0.8rem;
+}
+
+.permission-btn.secondary {
+    background: linear-gradient(135deg, #2196F3, #1976D2);
+}
+
+.permission-btn.secondary:hover {
+    box-shadow: 0 5px 15px rgba(33, 150, 243, 0.3);
+}
+
+.permission-btn.danger {
+    background: linear-gradient(135deg, #f44336, #d32f2f);
+}
+
+.location-icon {
+    color: #4CAF50;
+    margin-right: 5px;
+}
+
+.location-controls {
+    display: flex;
+    gap: 5px;
+}
+
+.location-controls .refresh-btn {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+}
+
+/* Анимации для геолокации */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.pulse {
+    animation: pulse 2s infinite;
+}
+
+/* Адаптивность для новых элементов */
+@media (max-width: 768px) {
+    .permission-request {
+        padding: 10px;
+    }
+    
+    .permission-btn {
+        width: 100%;
+        margin: 5px 0;
+        justify-content: center;
+    }
+    
+    .location-controls {
+        flex-wrap: wrap;
+    }
+    
+    .tg-badge {
+        margin-top: 10px;
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .tg-section {
+        order: 0; /* В мобильной версии оставляем на своем месте */
+    }
+}
