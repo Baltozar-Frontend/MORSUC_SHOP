@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BMW Racing v5.0 - Игра</title>
+    <style>
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box;
+        }
+        
+        body { 
+            overflow: hidden; 
+            background: #000;
+            font-family: 'Arial', sans-serif;
+            width: 100vw;
+            height: 100vh;
+            touch-action: none;
+        }
+        
+        #gameCanvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        
+        #hud {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: white;
+            z-index: 100;
+            pointer-events: none;
+            font-family: Arial, sans-serif;
+        }
+        
+        .speed {
+            background: rgba(0,0,0,0.7);
+            padding: 12px 24px;
+            border-radius: 12px;
+            border: 2px solid #00ff88;
+            font-size: 20px;
+            font-weight: bold;
+            backdrop-filter: blur(5px);
+        }
+        
+        #backToMenu {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+            background: rgba(200, 100, 0, 0.8);
+            color: white;
+            border: 2px solid #ff8800;
+            border-radius: 10px;
+            padding: 12px 24px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            font-family: Arial, sans-serif;
+        }
+        
+        #virtualJoystick {
+            position: absolute;
+            bottom: 100px;
+            left: 50px;
+            width: 150px;
+            height: 150px;
+            z-index: 50;
+            pointer-events: none;
+        }
+        
+        #joystickBase {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.3);
+            border: 3px solid rgba(255,255,255,0.5);
+            border-radius: 50%;
+            pointer-events: auto;
+            backdrop-filter: blur(5px);
+        }
+        
+        #joystickKnob {
+            position: absolute;
+            width: 70px;
+            height: 70px;
+            background: rgba(0, 100, 255, 0.9);
+            border: 3px solid white;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+        
+        #resetBtn {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            z-index: 100;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: rgba(200, 100, 0, 0.8);
+            border: 3px solid #ff8800;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            font-family: Arial, sans-serif;
+        }
+        
+        #shopBtn {
+            position: absolute;
+            bottom: 110px;
+            right: 20px;
+            z-index: 100;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: rgba(0, 136, 255, 0.8);
+            border: 3px solid #0066cc;
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        
+        #loading {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            color: white;
+            font-size: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+        
+        /* Стили для уведомлений */
+        .notification {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: rgba(0,0,0,0.9);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            border-left: 5px solid #00ff88;
+            z-index: 2000;
+            max-width: 300px;
+            font-size: 14px;
+            animation: slideInRight 0.3s forwards, slideOutRight 0.3s forwards 2.7s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            font-family: Arial, sans-serif;
+        }
+        
+        /* Анимации */
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideOutRight {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        
+        @keyframes glow {
+            0% { 
+                box-shadow: 0 0 5px #00ff88;
+                text-shadow: 0 0 5px #00ff88;
+            }
+            50% { 
+                box-shadow: 0 0 20px #00ff88;
+                text-shadow: 0 0 10px #00ff88;
+            }
+            100% { 
+                box-shadow: 0 0 5px #00ff88;
+                text-shadow: 0 0 5px #00ff88;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Экран загрузки -->
+    <div id="loading">
+        <div style="text-align: center;">
+            <div style="width: 60px; height: 60px; border: 4px solid #00ff88; border-top-color: transparent; border-radius: 50%; margin: 0 auto 20px;"></div>
+            <div style="font-size: 20px; margin-bottom: 10px;">Загрузка игры...</div>
+            <div style="font-size: 16px; color: #aaa;">BMW Racing v5.0</div>
+        </div>
+    </div>
+    
+    <!-- HUD интерфейс -->
+    <div id="hud">
+        <div class="speed">🚗 В машине: <span id="speed">0</span> км/ч</div>
+    </div>
+    
+    <!-- Кнопки управления -->
+    <button id="backToMenu">🏠 Меню</button>
+    <button id="shopBtn">🏪</button>
+    <button id="resetBtn">R</button>
+    
+    <!-- Игровой холст -->
+    <canvas id="gameCanvas"></canvas>
+    
+    <!-- Виртуальный джойстик -->
+    <div id="virtualJoystick">
+        <div id="joystickBase"></div>
+        <div id="joystickKnob"></div>
+    </div>
+
+    <!-- Подключение Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.min.js"></script>
+    
+    <!-- ПРАВИЛЬНЫЙ ПОРЯДОК ЗАГРУЗКИ ФАЙЛОВ -->
+    <!-- 1. Сначала загружаем глобальные переменные -->
+    <script src="game-loader.js"></script>
+    
+    <!-- 2. Основные функции игры -->
+    <script src="game-main.js"></script>
+    
+    <!-- 3. Мир и сцена -->
+    <script src="game-world.js"></script>
+    
+    <!-- 4. Машины, игрок, оружие -->
+    <script src="game-vehicles.js"></script>
+    
+    <!-- 5. Магазин и UI -->
+    <script src="game-shop.js"></script>
+    
+    <!-- 6. Физика и управление (последний) -->
+    <script src="game-physics.js"></script>
+</body>
+</html>
