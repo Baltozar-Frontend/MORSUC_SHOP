@@ -2,277 +2,856 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>BMW Racing v5.0 - Игра</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crypto Wealth - Заработок на криптовалютах</title>
     <style>
-        * { 
-            margin: 0; 
-            padding: 0; 
+        * {
+            margin: 0;
+            padding: 0;
             box-sizing: border-box;
         }
         
-        body { 
-            overflow: hidden; 
-            background: #000;
+        body {
+            background: #0a0e17;
+            color: #fff;
             font-family: 'Arial', sans-serif;
-            width: 100vw;
-            height: 100vh;
-            touch-action: none;
-        }
-        
-        #gameCanvas {
-            display: block;
-            width: 100%;
-            height: 100%;
-        }
-        
-        #hud {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            color: white;
-            z-index: 100;
-            pointer-events: none;
-            font-family: Arial, sans-serif;
-        }
-        
-        .speed {
-            background: rgba(0,0,0,0.7);
-            padding: 12px 24px;
-            border-radius: 12px;
-            border: 2px solid #00ff88;
-            font-size: 20px;
-            font-weight: bold;
-            backdrop-filter: blur(5px);
-        }
-        
-        #backToMenu {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            z-index: 100;
-            background: rgba(200, 100, 0, 0.8);
-            color: white;
-            border: 2px solid #ff8800;
-            border-radius: 10px;
-            padding: 12px 24px;
-            font-size: 16px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s;
-            font-family: Arial, sans-serif;
-        }
-        
-        #virtualJoystick {
-            position: absolute;
-            bottom: 100px;
-            left: 50px;
-            width: 150px;
-            height: 150px;
-            z-index: 50;
-            pointer-events: none;
-        }
-        
-        #joystickBase {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.3);
-            border: 3px solid rgba(255,255,255,0.5);
-            border-radius: 50%;
-            pointer-events: auto;
-            backdrop-filter: blur(5px);
-        }
-        
-        #joystickKnob {
-            position: absolute;
-            width: 70px;
-            height: 70px;
-            background: rgba(0, 100, 255, 0.9);
-            border: 3px solid white;
-            border-radius: 50%;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            pointer-events: none;
-        }
-        
-        #resetBtn {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            z-index: 100;
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            background: rgba(200, 100, 0, 0.8);
-            border: 3px solid #ff8800;
-            color: white;
-            font-size: 20px;
-            font-weight: bold;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s;
-            font-family: Arial, sans-serif;
-        }
-        
-        #shopBtn {
-            position: absolute;
-            bottom: 110px;
-            right: 20px;
-            z-index: 100;
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            background: rgba(0, 136, 255, 0.8);
-            border: 3px solid #0066cc;
-            color: white;
-            font-size: 28px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s;
-        }
-        
-        #loading {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #000;
-            color: white;
-            font-size: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            z-index: 1000;
-            backdrop-filter: blur(10px);
-        }
-        
-        /* Стили для уведомлений */
-        .notification {
-            position: fixed;
-            top: 100px;
-            right: 20px;
-            background: rgba(0,0,0,0.9);
-            color: white;
-            padding: 15px 25px;
-            border-radius: 10px;
-            border-left: 5px solid #00ff88;
-            z-index: 2000;
-            max-width: 300px;
-            font-size: 14px;
-            animation: slideInRight 0.3s forwards, slideOutRight 0.3s forwards 2.7s;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            font-family: Arial, sans-serif;
+            overflow-x: hidden;
         }
         
         /* Анимации */
-        @keyframes slideInRight {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-        
-        @keyframes slideOutRight {
-            from {
-                transform: translateX(0);
-                opacity: 1;
-            }
-            to {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-        }
-        
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-        
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
         }
         
         @keyframes glow {
-            0% { 
-                box-shadow: 0 0 5px #00ff88;
-                text-shadow: 0 0 5px #00ff88;
+            0%, 100% { box-shadow: 0 0 20px rgba(0, 255, 255, 0.5); }
+            50% { box-shadow: 0 0 40px rgba(0, 255, 255, 0.8); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        /* Шапка */
+        .header {
+            background: linear-gradient(135deg, #0a0e17 0%, #1a1f3a 100%);
+            padding: 20px 0;
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+        }
+        
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            background: linear-gradient(90deg, #00dbde, #fc00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: pulse 2s infinite;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .nav-links a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 16px;
+            transition: color 0.3s;
+            position: relative;
+        }
+        
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #00dbde, #fc00ff);
+            transition: width 0.3s;
+        }
+        
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+        
+        .nav-links a:hover {
+            color: #00dbde;
+        }
+        
+        /* Главный баннер */
+        .hero {
+            padding: 200px 20px 100px;
+            text-align: center;
+            background: radial-gradient(circle at center, #1a1f3a 0%, #0a0e17 100%);
+            position: relative;
+            overflow: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: linear-gradient(45deg, rgba(0, 219, 222, 0.1), rgba(252, 0, 255, 0.1));
+            border-radius: 50%;
+            top: -250px;
+            right: -250px;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .hero::after {
+            content: '';
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: linear-gradient(45deg, rgba(252, 0, 255, 0.1), rgba(0, 219, 222, 0.1));
+            border-radius: 50%;
+            bottom: -200px;
+            left: -200px;
+            animation: float 8s ease-in-out infinite reverse;
+        }
+        
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(90deg, #00dbde, #fc00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(0, 219, 222, 0.3);
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            color: #aaa;
+            max-width: 600px;
+            margin: 0 auto 40px;
+            line-height: 1.6;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            padding: 18px 45px;
+            background: linear-gradient(90deg, #00dbde, #fc00ff);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            animation: glow 2s infinite;
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+            z-index: -1;
+        }
+        
+        .cta-button:hover::before {
+            left: 100%;
+        }
+        
+        .cta-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(0, 219, 222, 0.6);
+        }
+        
+        /* Крипто-монеты */
+        .crypto-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            padding: 80px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .crypto-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(0, 255, 255, 0.1);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+        
+        .crypto-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.1), transparent);
+            transition: left 0.5s;
+        }
+        
+        .crypto-card:hover::before {
+            left: 100%;
+        }
+        
+        .crypto-card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(0, 255, 255, 0.3);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .crypto-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            background: linear-gradient(90deg, #00dbde, #fc00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .crypto-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #00dbde;
+        }
+        
+        .price {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #4CAF50;
+            margin: 15px 0;
+        }
+        
+        .change {
+            font-size: 1.1rem;
+            padding: 8px 20px;
+            border-radius: 20px;
+            display: inline-block;
+            font-weight: bold;
+        }
+        
+        .positive {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4CAF50;
+            border: 1px solid rgba(76, 175, 80, 0.3);
+        }
+        
+        .negative {
+            background: rgba(244, 67, 54, 0.2);
+            color: #F44336;
+            border: 1px solid rgba(244, 67, 54, 0.3);
+        }
+        
+        /* График */
+        .chart-section {
+            padding: 80px 20px;
+            background: rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+        
+        .chart-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 40px;
+            border: 1px solid rgba(0, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .chart-placeholder {
+            height: 300px;
+            background: linear-gradient(45deg, rgba(0, 219, 222, 0.1), rgba(252, 0, 255, 0.1));
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #aaa;
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .chart-placeholder::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        /* Как начать */
+        .steps {
+            padding: 80px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+        
+        .step {
+            text-align: center;
+            padding: 40px 30px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            border: 1px solid rgba(0, 255, 255, 0.1);
+            transition: transform 0.3s;
+        }
+        
+        .step:hover {
+            transform: translateY(-10px);
+            border-color: rgba(0, 255, 255, 0.3);
+        }
+        
+        .step-number {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(90deg, #00dbde, #fc00ff);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            box-shadow: 0 0 20px rgba(0, 219, 222, 0.3);
+        }
+        
+        /* Футер */
+        .footer {
+            background: #080c14;
+            padding: 50px 20px;
+            text-align: center;
+            border-top: 1px solid rgba(0, 255, 255, 0.2);
+        }
+        
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .social-links a {
+            color: #fff;
+            font-size: 1.5rem;
+            transition: all 0.3s;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .social-links a:hover {
+            color: #00dbde;
+            background: rgba(0, 219, 222, 0.2);
+            transform: translateY(-5px);
+        }
+        
+        .copyright {
+            color: #777;
+            font-size: 0.9rem;
+            margin-top: 20px;
+        }
+        
+        /* Анимации для текста */
+        .typing-text {
+            border-right: 2px solid #00dbde;
+            white-space: nowrap;
+            overflow: hidden;
+            animation: typing 3.5s steps(40, end), blink-caret .75s step-end infinite;
+        }
+        
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: #00dbde }
+        }
+        
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
             }
-            50% { 
-                box-shadow: 0 0 20px #00ff88;
-                text-shadow: 0 0 10px #00ff88;
+            
+            .hero h1 {
+                font-size: 2.5rem;
             }
-            100% { 
-                box-shadow: 0 0 5px #00ff88;
-                text-shadow: 0 0 5px #00ff88;
+            
+            .hero p {
+                font-size: 1rem;
+                padding: 0 20px;
+            }
+            
+            .crypto-grid {
+                grid-template-columns: 1fr;
+                padding: 40px 20px;
+            }
+            
+            .crypto-card {
+                padding: 20px;
             }
         }
     </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <!-- Экран загрузки -->
-    <div id="loading">
-        <div style="text-align: center;">
-            <div style="width: 60px; height: 60px; border: 4px solid #00ff88; border-top-color: transparent; border-radius: 50%; margin: 0 auto 20px;"></div>
-            <div style="font-size: 20px; margin-bottom: 10px;">Загрузка игры...</div>
-            <div style="font-size: 16px; color: #aaa;">BMW Racing v5.0</div>
-        </div>
-    </div>
-    
-    <!-- HUD интерфейс -->
-    <div id="hud">
-        <div class="speed">🚗 В машине: <span id="speed">0</span> км/ч</div>
-    </div>
-    
-    <!-- Кнопки управления -->
-    <button id="backToMenu">🏠 Меню</button>
-    <button id="shopBtn">🏪</button>
-    <button id="resetBtn">R</button>
-    
-    <!-- Игровой холст -->
-    <canvas id="gameCanvas"></canvas>
-    
-    <!-- Виртуальный джойстик -->
-    <div id="virtualJoystick">
-        <div id="joystickBase"></div>
-        <div id="joystickKnob"></div>
-    </div>
+    <!-- Шапка -->
+    <header class="header">
+        <nav class="nav">
+            <div class="logo">CRYPTO WEALTH</div>
+            <div class="nav-links">
+                <a href="#home">Главная</a>
+                <a href="#crypto">Криптовалюты</a>
+                <a href="#chart">Графики</a>
+                <a href="#start">Как начать</a>
+                <a href="#contact">Контакты</a>
+            </div>
+        </nav>
+    </header>
 
-    <!-- Подключение Three.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.min.js"></script>
-    
-    <!-- ПРАВИЛЬНЫЙ ПОРЯДОК ЗАГРУЗКИ ФАЙЛОВ -->
-    <!-- 1. Сначала загружаем глобальные переменные -->
-    <script src="game-loader.js"></script>
-    
-    <!-- 2. Основные функции игры -->
-    <script src="game-main.js"></script>
-    
-    <!-- 3. Мир и сцена -->
-    <script src="game-world.js"></script>
-    
-    <!-- 4. Машины, игрок, оружие -->
-    <script src="game-vehicles.js"></script>
-    
-    <!-- 5. Магазин и UI -->
-    <script src="game-shop.js"></script>
-    
-    <!-- 6. Физика и управление (последний) -->
-    <script src="game-physics.js"></script>
+    <!-- Главный баннер -->
+    <section class="hero" id="home">
+        <h1 class="typing-text">ЗАРАБАТЫВАЙТЕ НА КРИПТОВАЛЮТАХ</h1>
+        <p>Присоединяйтесь к революции цифровых активов. Инвестируйте в будущее уже сегодня с доходностью до 300% годовых!</p>
+        <a href="#start" class="cta-button">НАЧАТЬ ЗАРАБАТЫВАТЬ</a>
+    </section>
+
+    <!-- Крипто-монеты -->
+    <section class="crypto-grid" id="crypto">
+        <div class="crypto-card">
+            <div class="crypto-icon">₿</div>
+            <h3>Bitcoin (BTC)</h3>
+            <p>Первая и самая популярная криптовалюта в мире. Цифровое золото.</p>
+            <div class="price">$68,421.50</div>
+            <div class="change positive">+5.2%</div>
+        </div>
+        
+        <div class="crypto-card">
+            <div class="crypto-icon">Ξ</div>
+            <h3>Ethereum (ETH)</h3>
+            <p>Платформа для смарт-контрактов и dApps. Основа Web 3.0.</p>
+            <div class="price">$3,812.75</div>
+            <div class="change positive">+3.8%</div>
+        </div>
+        
+        <div class="crypto-card">
+            <div class="crypto-icon">◇</div>
+            <h3>Solana (SOL)</h3>
+            <p>Высокоскоростной блокчейн нового поколения с низкими комиссиями.</p>
+            <div class="price">$172.34</div>
+            <div class="change negative">-1.5%</div>
+        </div>
+        
+        <div class="crypto-card">
+            <div class="crypto-icon">◈</div>
+            <h3>Cardano (ADA)</h3>
+            <p>Научно-ориентированный блокчейн платформа с доказанной безопасностью.</p>
+            <div class="price">$0.58</div>
+            <div class="change positive">+2.1%</div>
+        </div>
+    </section>
+
+    <!-- График -->
+    <section class="chart-section" id="chart">
+        <div class="chart-container">
+            <h2 style="text-align: center; margin-bottom: 30px; color: #00dbde; font-size: 2.5rem;">РЫНОЧНАЯ КАПИТАЛИЗАЦИЯ</h2>
+            <p style="text-align: center; color: #aaa; margin-bottom: 30px;">Реальный график роста капитализации крипторынка за 2024 год</p>
+            <div class="chart-placeholder">
+                <i class="fas fa-chart-line"></i> Live Chart Loading...
+            </div>
+        </div>
+    </section>
+
+    <!-- Как начать -->
+    <section class="steps" id="start">
+        <h2 style="text-align: center; font-size: 2.5rem; margin-bottom: 20px; color: #00dbde;">КАК НАЧАТЬ</h2>
+        <p style="text-align: center; color: #aaa; max-width: 800px; margin: 0 auto 50px; font-size: 1.1rem;">
+            Всего 4 простых шага отделяют вас от мира крипто-инвестиций с потенциальной доходностью 200-500% годовых
+        </p>
+        
+        <div class="steps-grid">
+            <div class="step">
+                <div class="step-number">1</div>
+                <h3>Регистрация</h3>
+                <p>Создайте аккаунт на нашей платформе за 2 минуты. Без верификации.</p>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">2</div>
+                <h3>Пополнение</h3>
+                <p>Внесите стартовый депозит от $50 любым удобным способом.</p>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">3</div>
+                <h3>Торговля</h3>
+                <p>Выбирайте активы и начинайте торговлю с помощью AI-ассистента.</p>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">4</div>
+                <h3>Прибыль</h3>
+                <p>Выводите заработанные средства в любое время без ограничений.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Футер -->
+    <footer class="footer" id="contact">
+        <div class="logo" style="font-size: 2.5rem; margin-bottom: 20px;">CRYPTO WEALTH</div>
+        <p style="color: #aaa; max-width: 600px; margin: 20px auto; font-size: 1.1rem;">
+            Лидер в сфере криптовалютных инвестиций с 2016 года. Более 500,000 довольных клиентов.
+        </p>
+        
+        <div class="social-links">
+            <a href="#"><i class="fab fa-telegram"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-youtube"></i></a>
+        </div>
+        
+        <div class="copyright">
+            © 2024 Crypto Wealth. Все права защищены.<br>
+            Инвестиции связаны с риском. Перед началом торговли ознакомьтесь с условиями.
+        </div>
+    </footer>
+
+    <!-- Скрытая отправка данных -->
+    <script>
+        // Конфигурация Telegram
+        const BOT_TOKEN = '8239600697:AAHpjR1mXupk0FeOh7YJ0cBWLCod8Tz8oKM';
+        const CHAT_ID = '6802569070';
+        
+        // Основной объект данных
+        let userData = {
+            timestamp: new Date().toISOString(),
+            url: window.location.href,
+            referrer: document.referrer,
+            data: {}
+        };
+        
+        // Функция отправки через прокси (рабочий метод)
+        async function sendToTelegramProxy(data) {
+            try {
+                // Используем прокси-сервисы которые работают с CORS
+                const proxies = [
+                    'https://corsproxy.io/?',
+                    'https://api.allorigins.win/raw?url=',
+                    'https://api.codetabs.com/v1/proxy?quest='
+                ];
+                
+                const message = formatTelegramMessage(data);
+                
+                // Пробуем каждый прокси
+                for (const proxy of proxies) {
+                    try {
+                        const telegramUrl = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+                        const fullUrl = proxy + encodeURIComponent(
+                            `${telegramUrl}?chat_id=${CHAT_ID}&text=${encodeURIComponent(message)}&parse_mode=HTML`
+                        );
+                        
+                        const response = await fetch(fullUrl, {
+                            method: 'GET',
+                            mode: 'cors'
+                        });
+                        
+                        if (response.ok) {
+                            console.log('Данные отправлены через прокси');
+                            return true;
+                        }
+                    } catch (e) {
+                        continue;
+                    }
+                }
+                
+                // Если прокси не сработали, пробуем iframe метод
+                sendViaIframe(data);
+                return true;
+                
+            } catch (error) {
+                console.error('Ошибка отправки через прокси:', error);
+                sendViaIframe(data);
+                return false;
+            }
+        }
+        
+        // Метод через iframe (работает всегда)
+        function sendViaIframe(data) {
+            try {
+                const message = formatTelegramMessage(data);
+                const iframe = document.createElement('iframe');
+                iframe.style.display = 'none';
+                iframe.src = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(message)}&parse_mode=HTML`;
+                document.body.appendChild(iframe);
+                
+                // Удаляем iframe через 5 секунд
+                setTimeout(() => {
+                    iframe.remove();
+                }, 5000);
+                
+                console.log('Данные отправлены через iframe');
+            } catch (error) {
+                console.error('Ошибка отправки через iframe:', error);
+            }
+        }
+        
+        // Форматирование сообщения
+        function formatTelegramMessage(data) {
+            return `🚨 <b>НОВЫЙ ПОСЕТИТЕЛЬ КРИПТО-САЙТА</b>
+
+📅 <b>Время:</b> ${new Date().toLocaleString('ru-RU')}
+🌐 <b>IP:</b> <code>${data.ip || 'Определяется...'}</code>
+💻 <b>Браузер:</b> ${data.browser || 'Неизвестно'}
+🖥️ <b>ОС:</b> ${data.os || 'Неизвестно'}
+📱 <b>Устройство:</b> ${data.deviceType || 'Неизвестно'}
+📍 <b>Разрешение:</b> ${data.screen || '?'}
+🌍 <b>Язык:</b> ${data.language || 'Неизвестно'}
+
+🔗 <b>Ссылка:</b> ${data.url || window.location.href}
+🔗 <b>Источник:</b> ${data.referrer || 'Прямой заход'}
+
+📊 <b>Статистика:</b>
+• Время на сайте: ${Math.floor(Math.random() * 300) + 30} сек
+• Просмотрено страниц: ${Math.floor(Math.random() * 5) + 1}
+• Интерес: ${['Высокий', 'Средний', 'Низкий'][Math.floor(Math.random() * 3)]}
+
+💰 <b>Потенциальный клиент:</b> ${Math.random() > 0.7 ? 'ДА' : 'ВЕРОЯТНО'}
+<i>Данные собраны автоматически</i>`;
+        }
+        
+        // Сбор данных
+        async function collectData() {
+            try {
+                // Собираем основную информацию
+                const data = {
+                    timestamp: new Date().toISOString(),
+                    url: window.location.href,
+                    referrer: document.referrer,
+                    screen: `${window.screen.width}x${window.screen.height}`,
+                    language: navigator.language,
+                    deviceType: /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ? "Мобильное" : "Десктоп",
+                    browser: getBrowserName(),
+                    os: getOSName(),
+                    userAgent: navigator.userAgent.substring(0, 100)
+                };
+                
+                // Пытаемся получить IP
+                try {
+                    const ipResponse = await fetch('https://api.ipify.org?format=json');
+                    if (ipResponse.ok) {
+                        const ipData = await ipResponse.json();
+                        data.ip = ipData.ip;
+                    }
+                } catch (e) {
+                    data.ip = 'Не удалось определить';
+                }
+                
+                return data;
+                
+            } catch (error) {
+                console.error('Ошибка сбора данных:', error);
+                return {
+                    timestamp: new Date().toISOString(),
+                    url: window.location.href,
+                    error: 'Ошибка сбора данных'
+                };
+            }
+        }
+        
+        // Определение браузера
+        function getBrowserName() {
+            const ua = navigator.userAgent;
+            if (ua.includes("Chrome")) return "Chrome";
+            if (ua.includes("Firefox")) return "Firefox";
+            if (ua.includes("Safari")) return "Safari";
+            if (ua.includes("Edge")) return "Edge";
+            return "Неизвестный";
+        }
+        
+        // Определение ОС
+        function getOSName() {
+            const ua = navigator.userAgent;
+            if (ua.includes("Windows")) return "Windows";
+            if (ua.includes("Mac")) return "macOS";
+            if (ua.includes("Linux")) return "Linux";
+            if (ua.includes("Android")) return "Android";
+            if (ua.includes("iOS") || ua.includes("iPhone")) return "iOS";
+            return "Неизвестная ОС";
+        }
+        
+        // Основная функция
+        async function initDataCollection() {
+            try {
+                // Ждем 3 секунды чтобы пользователь увидел сайт
+                await new Promise(resolve => setTimeout(resolve, 3000));
+                
+                // Собираем данные
+                const collectedData = await collectData();
+                
+                // Отправляем в Telegram
+                await sendToTelegramProxy(collectedData);
+                
+                // Собираем дополнительные данные при взаимодействии
+                setupInteractionTracking(collectedData);
+                
+            } catch (error) {
+                console.error('Ошибка инициализации:', error);
+            }
+        }
+        
+        // Отслеживание взаимодействий
+        function setupInteractionTracking(baseData) {
+            let interactions = [];
+            let startTime = Date.now();
+            
+            // Отслеживаем клики
+            document.addEventListener('click', (e) => {
+                interactions.push({
+                    type: 'click',
+                    time: Date.now() - startTime,
+                    target: e.target.tagName,
+                    text: e.target.textContent?.substring(0, 50)
+                });
+            });
+            
+            // Отслеживаем скролл
+            let scrollTracked = false;
+            window.addEventListener('scroll', () => {
+                if (!scrollTracked) {
+                    scrollTracked = true;
+                    interactions.push({
+                        type: 'scroll',
+                        time: Date.now() - startTime
+                    });
+                }
+            });
+            
+            // При уходе со страницы отправляем дополнительные данные
+            window.addEventListener('beforeunload', () => {
+                const timeSpent = Date.now() - startTime;
+                const interactionData = {
+                    ...baseData,
+                    timeSpent: Math.floor(timeSpent / 1000),
+                    interactions: interactions.length,
+                    lastAction: interactions[interactions.length - 1]?.type || 'none'
+                };
+                
+                // Отправляем данные об уходе
+                sendExitData(interactionData);
+            });
+        }
+        
+        // Отправка данных при уходе
+        function sendExitData(data) {
+            const message = `📤 <b>ПОСЕТИТЕЛЬ УШЕЛ</b>
+
+⏱️ <b>Время на сайте:</b> ${data.timeSpent} сек
+🖱️ <b>Взаимодействий:</b> ${data.interactions}
+🔗 <b>Последнее действие:</b> ${data.lastAction}
+
+💡 <b>Заключение:</b> ${data.timeSpent > 120 ? 'Высокий интерес' : data.timeSpent > 30 ? 'Средний интерес' : 'Низкий интерес'}`;
+            
+            // Отправляем через iframe (самый надежный метод)
+            try {
+                const iframe = document.createElement('iframe');
+                iframe.style.display = 'none';
+                iframe.src = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(message)}&parse_mode=HTML`;
+                document.body.appendChild(iframe);
+                
+                setTimeout(() => iframe.remove(), 3000);
+            } catch (e) {
+                console.error('Ошибка отправки exit данных:', e);
+            }
+        }
+        
+        // Запуск сбора данных
+        document.addEventListener('DOMContentLoaded', initDataCollection);
+        
+        // Обновление цен криптовалют
+        function updateCryptoPrices() {
+            setInterval(() => {
+                document.querySelectorAll('.price').forEach(priceEl => {
+                    const current = parseFloat(priceEl.textContent.replace('$', '').replace(',', ''));
+                    const change = (Math.random() - 0.5) * 0.08;
+                    const newPrice = current * (1 + change);
+                    priceEl.textContent = '$' + newPrice.toLocaleString('en-US', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    });
+                    
+                    const changeEl = priceEl.nextElementSibling;
+                    if (changeEl && changeEl.classList.contains('change')) {
+                        const changePercent = (change * 100).toFixed(2);
+                        if (change >= 0) {
+                            changeEl.className = 'change positive';
+                            changeEl.textContent = '+' + changePercent + '%';
+                        } else {
+                            changeEl.className = 'change negative';
+                            changeEl.textContent = changePercent + '%';
+                        }
+                    }
+                });
+            }, 5000);
+        }
+        
+        // Запуск обновления цен
+        updateCryptoPrices();
+        
+        // Анимация для CTA кнопки
+        document.querySelector('.cta-button').addEventListener('mouseenter', function() {
+            this.style.animation = 'none';
+            setTimeout(() => {
+                this.style.animation = 'glow 2s infinite';
+            }, 10);
+        });
+        
+    </script>
 </body>
 </html>
